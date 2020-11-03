@@ -1,7 +1,5 @@
 # Практикум №1
 
-### [![Build Status](https://travis-ci.com/FAnastasiaF/Formal-Languages.svg?token=uBX54u6DiMPNbKZv3Hs7&branch=Practical_Work_1)](https://travis-ci.com/FAnastasiaF/Formal-Languages)
-
 #### Задача:
 *(18 вариант)*
 
