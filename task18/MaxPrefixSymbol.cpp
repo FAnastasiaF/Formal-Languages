@@ -98,8 +98,14 @@ void dopoint (std::vector<std::pair<int, int>> &max, std::vector<int> &typesymbo
   if (typesymbol[size - 1] == 0) { // 0.x
     type = 0;
     maxm = max[size - 1];
+  } else if (typesymbol[size] == 1) { // x.1
+    type = typesymbol[size - 1];
+    maxm = max[size - 1];
+  } else if (typesymbol[size - 1] == 1) { // 1.x
+    type = typesymbol[size];
+    maxm = max[size];
   } else if (typesymbol[size] == 0) { //x.0
-    if (typesymbol[size - 1] < 3 || typesymbol[size - 1] == 4) {
+    if (typesymbol[size - 1] == 2 || typesymbol[size - 1] == 4) {
       type = typesymbol[size - 1];
       maxm = max[size - 1];
     } else if(typesymbol[size - 1] == 3) {
@@ -113,12 +119,6 @@ void dopoint (std::vector<std::pair<int, int>> &max, std::vector<int> &typesymbo
       maxm = {std::max(max[size - 1].first, max[size - 1].second),
               std::max(max[size - 1].first, max[size - 1].second)};
     }
-  } else if (typesymbol[size] == 1) { // x.1
-    type = typesymbol[size - 1];
-    maxm = max[size - 1];
-  } else if (typesymbol[size - 1] == 1) { // 1.x
-    type = typesymbol[size];
-    maxm = max[size];
   } else if (typesymbol[size - 1] == 4 && typesymbol[size - 1] == 2) { // 4.x, 2.x
     type = typesymbol[size - 1];
     maxm = max[size-1];
