@@ -31,7 +31,7 @@
 
 ```make```
 
-```./first-practical-work```
+```./regularexpressions```
 
 Для запуска программы воспользуйтесь командами:
 
@@ -39,5 +39,5 @@
 
 ```make```
 
-```./first-practical-work```
+```./regularexpressions```
 
