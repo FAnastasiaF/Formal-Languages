@@ -27,15 +27,19 @@
 Для того чтобы запустить тесты,
 воспользуйтесь командами:
 
-```cmake -DDEBUG=1```
+```cd tests```
+
+```cmake .```
 
 ```make```
 
-```./regularexpressions```
+```./regularexpressionstests```
 
 Для запуска программы воспользуйтесь командами:
 
-```cmake```
+```cd task18```
+
+```cmake .```
 
 ```make```
 

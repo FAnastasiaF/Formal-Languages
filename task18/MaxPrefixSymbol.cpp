@@ -27,7 +27,7 @@ void doplus (std::vector<std::pair<int, int>> &max, std::vector<int> &typesymbol
     type = 5;
     maxm = {0, max[max.size() - 1].first + max[max.size() - 1].first};
   } else if ((typesymbol[size] == 1 || typesymbol[size - 1] == 1)) { // 1+y, y+1, y = 1,3,4,5
-    type = std::max(typesymbol[size], typesymbol[size]);
+    type = std::max(typesymbol[size], typesymbol[size-1]);
     maxm = {max[size].first + max[size - 1].first,
             max[size].second + max[size - 1].second};
   } else if (typesymbol[size] == 2 && typesymbol[size - 1] == 2) { // 2+2
