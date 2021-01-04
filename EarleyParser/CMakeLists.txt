@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.16)
+project(earleyparser)
+
+set(CMAKE_CXX_STANDARD 17)
+
+
+include_directories(.)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g")
+
+
+set(SOURCE_FILES main.cpp "Grammar.cpp" "Grammar.h")
+
+add_executable(earleyparser ${SOURCE_FILES})
