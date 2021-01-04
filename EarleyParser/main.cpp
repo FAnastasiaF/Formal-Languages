@@ -1,13 +1,10 @@
-#ifdef DEBUG
-#include <gtest/gtest.h>
-#endif
 #include <iostream>
 #include <vector>
 #include <string>
 #include "Grammar.h"
 
 
-void scanrules(std::vector<std::vector<std::string>> &rules) {
+void scanrules(std::vector<std::pair<char, std::string>> &rules) {
   int n;
   std::cout << "Введите количество правил в вашей КС-грамматике\n";
   std::cin >> n;
@@ -16,19 +13,14 @@ void scanrules(std::vector<std::vector<std::string>> &rules) {
   std::cout << "Далее введите через пробел нетерминал и правило\n";
   for (int i = 0; i < n; ++i) {
     std::cin >> noterminal >> rule;
-    rules[noterminal].push_back(rule);
+    rules.push_back({noterminal, rule});
   }
 }
 
 
 int main()
 {
-#ifdef DEBUG
-  ::testing::InitGoogleTest();
-  return RUN_ALL_TESTS();
-#endif
-
-  std::vector<std::vector<std::string>> rules('Z',std::vector<std::string>());
+  std::vector<std::pair<char, std::string>> rules;
 
   scanrules(rules);
   std::cout << "Введите стартовый нетерминал\n";

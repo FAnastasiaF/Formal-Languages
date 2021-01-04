@@ -1,45 +1,86 @@
 #include "Grammar.h"
 #include <algorithm>
-#include <list>
+#include <iostream>
+
 
 bool Grammar::EarleyParser(std::string word) {
+  D.clear();
+  D.resize(word.size() + 1);
+  D[0].push_back(Situation(rules[0], 0, 0));
 
-  std::list<Node> states;
-  states.push_back(startstate);
-  std::vector<Node> NodesToFree;
-
-  while(!states.empty()){
-    Node currentnode = states.front();
-    states.pop_front();
-    if(currentnode.state.size() > word.size() + 10) {
-      continue;
+  for (int j = 0; j <= word.size(); ++j) {
+    if (j > 0) {
+      Scan(j, word[j - 1]);
     }
-    if(word == currentnode.state){
+    for (int i = -1; i != D[j].size();) {
+      i = D[j].size();
+      Predict(j);
+      Complete(j);
+    }
+  }
+  //D.shrink_to_fit();
+  for (auto i : D[D.size() - 1]) {
+    if(i == Situation(rules[0], 1, 0)) {
       return true;
     }
+  }
+  return false;
+}
 
-    char nonterminal = '0';
-    int indexnonterminal = 0;
-    for(int i = 0, size = currentnode.state.size(); i < size;++i) {
-      if(currentnode.state[i] >= 'A' && currentnode.state[i] <= 'Z') {
-        nonterminal = currentnode.state[i];
-        indexnonterminal = i;
-        break;
+
+void Grammar::Scan(int j, char letter) {
+  for (auto i : D[j - 1]) {
+    if (i.rule.second[i.position] == letter) {
+      D[j].push_back(Situation(i.rule, i.position + 1, i.start));
+    }
+  }
+}
+
+void Grammar::Predict(int j) {
+  std::vector<Situation> tmpsituation;
+  for (auto i : D[j]) {
+    for (auto r : rules) {
+      if (i.rule.second.size() > i.position && r.first == i.rule.second[i.position]) {
+        tmpsituation.push_back(Situation(r, 0, j));
+      }
+    }
+  }
+  for (const auto& i : tmpsituation) {
+    bool same_situation = false;
+    for (const auto& k : D[j]) {
+      if (k == i) {
+        same_situation = true;
       }
     }
 
-    if(nonterminal != '0')
-      for(int i = 0, size = rules[nonterminal].size(); i < size;++i) {
-        if(rules[nonterminal][i][0] == '&') {
-          NodesToFree.push_back(std::string(currentnode.state).erase(indexnonterminal, 1));
-        }
-        else {
-          NodesToFree.push_back((std::string(currentnode.state).replace(indexnonterminal,
-                                                                        1,
-                                                                        rules[nonterminal][i])));
-        }
-        states.push_back(NodesToFree[NodesToFree.size()-1]);
-      }
+    if (not same_situation) {
+      D[j].push_back(i);
+    }
   }
-  return false;
+}
+
+void Grammar::Complete(int j) {
+  std::vector<Situation> tmpsituation;
+  for (auto i : D[j]) {
+    if (i.position == i.rule.second.size()) {
+      for (auto k : D[i.start]) {
+        if (k.rule.second.size() > k.position && k.rule.second[k.position] == i.rule.first) {
+          tmpsituation.push_back(Situation(k.rule, k.position + 1, k.start));
+        }
+      }
+    }
+  }
+
+  for (const auto& i : tmpsituation) {
+    bool same_situation = false;
+    for (const auto& k : D[j]) {
+      if (k == i) {
+        same_situation = true;
+      }
+    }
+
+    if (not same_situation) {
+      D[j].push_back(i);
+    }
+  }
 }
