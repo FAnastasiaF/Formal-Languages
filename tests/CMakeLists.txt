@@ -18,5 +18,5 @@ set(SOURCE_DEBUG_FILES test.cpp)
 
 set(SOURCE_FILES main.cpp ../task18/MaxPrefixSymbol.cpp ../task18/MaxPrefixSymbol.h)
 
-add_executable(regularexpressionstest ${SOURCE_FILES} ${SOURCE_DEBUG_FILES})
-target_link_libraries(regularexpressionstest gtest gtest_main)
+add_executable(regularexpressionstests ${SOURCE_FILES} ${SOURCE_DEBUG_FILES})
+target_link_libraries(regularexpressionstests gtest gtest_main)
