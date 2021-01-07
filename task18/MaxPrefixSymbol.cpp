@@ -1,180 +1,96 @@
 #include <vector>
 #include <string>
+#include <iostream>
 
-void check(std::pair<int, int> &max, int &type) {
-  if (type == 6) {
-    if (max.first >= max.second) {
-      type = 3;
-      max.second = max.first;
+struct parametrs {
+  int type = 1;
+  int maxprefixonlyletter = 0;
+  int maxprefixnoonlyletter = 0;
+  bool isinf = false;
+  parametrs () = default;
+  parametrs(int type_, int maxprefixonlyletter_, int maxprefixnoonlyletter_, bool isinf_ = false) : 
+  type(type_), maxprefixonlyletter(maxprefixonlyletter_), 
+  maxprefixnoonlyletter(maxprefixnoonlyletter_), isinf(isinf_){};
+  void fixedtype () {
+    if (type == 2 && maxprefixonlyletter >= maxprefixnoonlyletter) {
+      type = 1;
+      maxprefixnoonlyletter = 0;
     }
   }
-}
-
-void doplus (std::vector<std::pair<int, int>> &max, std::vector<int> &typesymbol) {
-  std::pair<int, int> maxm;
-  int type;
-  size_t size = max.size() - 1;
-
-  if (typesymbol[size] == 0 || typesymbol[size - 1] == 0) { // 0 + x, x + 0
-    maxm = {max[size].first + max[size - 1].first,
-            max[size].second + max[size - 1].second};
-    type = typesymbol[size] + typesymbol[size - 1];
-  } else if (typesymbol[size] == 4 || typesymbol[size - 1] == 4) { // 4+x, x+4
-    maxm = {0, 0};
-    type = 4;
-  } else if ((typesymbol[size] == 1 && typesymbol[size - 1] == 2) // 1+2, 2+1
-      || (typesymbol[size] == 2 && typesymbol[size - 1] == 1)){
-    type = 5;
-    maxm = {0, max[max.size() - 1].first + max[max.size() - 1].first};
-  } else if ((typesymbol[size] == 1 || typesymbol[size - 1] == 1)) { // 1+y, y+1, y = 1,3,4,5
-    type = std::max(typesymbol[size], typesymbol[size-1]);
-    maxm = {max[size].first + max[size - 1].first,
-            max[size].second + max[size - 1].second};
-  } else if (typesymbol[size] == 2 && typesymbol[size - 1] == 2) { // 2+2
-    type = 2;
-    maxm = {std::max(max[size].first, max[size - 1].first),
-            std::max(max[size].second, max[size - 1].second)};
-  } else if ((typesymbol[size] == 3 && typesymbol[size - 1] == 2) // 3+2, 2+3
-      || (typesymbol[size] == 2 && typesymbol[size - 1] == 3)) {
-    type = 6;
-    if (typesymbol[size] == 2) {
-      maxm = {max[size - 1].first, max[size].first};
-    } else {
-      maxm = {max[size].first, max[size - 1].first};
-    }
-  } else if (typesymbol[size - 1] == 2 || typesymbol[size] == 2) { // 2+5, 2+6
-    type = std::max(typesymbol[size], typesymbol[size - 1]);
-    if (typesymbol[size - 1] == 2) {
-      maxm = {max[size].first, std::max(max[size].second, max[size - 1].second)};
-    } else {
-      maxm = {max[size - 1].first, std::max(max[size].second, max[size - 1].second)};
-    }
-  } else if(typesymbol[size - 1] == 3 && typesymbol[size] == 3) { // 3+3
-    type = 3;
-    if (max[size].first >= max[size - 1].first) {
-      maxm = max[size];
-    } else {
-      maxm = max[size - 1];
-    }
-  } else if (typesymbol[size] == 3) { // 3+5, 3+6
-    type = 6;
-    maxm = {std::max(max[size].first, max[size - 1].first), max[size - 1].second};
-  } else if (typesymbol[size - 1] == 3) { // 5+3, 6+3
-    type = 6;
-    maxm = {std::max(max[size - 1].first, max[size].first), max[size].second};
-  } else if (typesymbol[size - 1] == 5 && typesymbol[size] == 5) { // 5+5
-    type = 5;
-    maxm = {0, std::max(max[size].second, max[size - 1].second)};
-  } else { // 6+6 5+5
-    type = 6;
-    maxm = {std::max(max[size].first, max[size-1].first),
-            std::max(max[size].second, max[size - 1].second)};
+  void print() {
+    printf("type = %d, prefixa = %d, prefixnoa = %d, isinf = %d\n", type, maxprefixonlyletter, maxprefixnoonlyletter, isinf);
   }
-  check(maxm, type);
-  typesymbol.pop_back();
-  typesymbol.pop_back();
-  typesymbol.push_back(type);
-  max.pop_back();
-  max.pop_back();
-  max.push_back(maxm);
-}
+};
 
-
-void dostar (std::vector<std::pair<int, int>> &max, std::vector<int> &typesymbol) {
-  int size = max.size() - 1;
-  if (typesymbol[size] == 3 || typesymbol[size] == 6) {
-    typesymbol[size] = 4;
-    max[size] = {0, 0};
-  } else if (typesymbol[size] == 0) {
-    typesymbol[size] = 1;
-    max[size] = {0, 0};
-  }
-}
-
-void dopoint (std::vector<std::pair<int, int>> &max, std::vector<int> &typesymbol) {
-  size_t size = max.size() - 1;
-  int type;
-  std::pair<int, int> maxm;
-  if (typesymbol[size - 1] == 0) { // 0.x
-    type = 0;
-    maxm = max[size - 1];
-  } else if (typesymbol[size] == 1) { // x.1
-    type = typesymbol[size - 1];
-    maxm = max[size - 1];
-  } else if (typesymbol[size - 1] == 1) { // 1.x
-    type = typesymbol[size];
-    maxm = max[size];
-  } else if (typesymbol[size] == 0) { //x.0
-    if (typesymbol[size - 1] == 2 || typesymbol[size - 1] == 4) {
-      type = typesymbol[size - 1];
-      maxm = max[size - 1];
-    } else if(typesymbol[size - 1] == 3) {
-      type = 2;
-      maxm = max[size - 1];
-    } else if(typesymbol[size - 1] == 5) {
-      type = 2;
-      maxm = {max[size - 1].second, max[size - 1].second};
-    } else {
-      type = 2;
-      maxm = {std::max(max[size - 1].first, max[size - 1].second),
-              std::max(max[size - 1].first, max[size - 1].second)};
-    }
-  } else if (typesymbol[size - 1] == 4 && typesymbol[size - 1] == 2) { // 4.x, 2.x
-    type = typesymbol[size - 1];
-    maxm = max[size-1];
-  } else if (typesymbol[size] == 2) { // x.2
-    if (typesymbol[size - 1] == 3) {
-      type = 2;
-      maxm = {max[size].first + max[size - 1].first, max[size].second + max[size - 1].second};
-    } else if (typesymbol[size - 1] == 5) {
-      type = 2;
-      maxm = {std::max(max[size-1].second, max[size].second), std::max(max[size-1].second, max[size].second)};
-    } else {
-      type = 2;
-      maxm = {std::max(max[size-1].second, max[size].first + max[size - 1].first),
-              std::max(max[size-1].second, max[size].first + max[size - 1].first)};
-    }
-  } else if (typesymbol[size] == 3) { // x.3
-    if (typesymbol[size - 1] == 3) {
-      type = typesymbol[size - 1];
-      maxm = {max[size].first + max[size - 1].first, max[size].first + max[size - 1].first};
-    } else if (typesymbol[size - 1] == 4) {
-      type = 4;
-      maxm = {0,0};
-    } else {
-      type = 6;
-      maxm = {max[size].first + max[size - 1].first, max[size - 1].second};
-    }
-  } else if (typesymbol[size - 1] == 3) { // 3.x
-    type = 6;
-    maxm = {max[size].first + max[size - 1].first, max[size - 1].second};
-  } else if (typesymbol[size] == 4) { // x.4
-    type = 4;
-    maxm = {0, 0};
-  } else if (typesymbol[size] == 5) { // x.5
-    if (typesymbol[size - 1] == 5) {
-      type = typesymbol[size];
-      maxm = {0, std::max(max[size].second, max[size - 1].second)};
-    } else {
-      type = typesymbol[size - 1];
-      maxm = {max[size - 1].first, std::max(max[size].second, max[size - 1].second)};
-    }
-  } else if (typesymbol[size - 1] == 5) { // 5.x
-    type = 6;
-    maxm = {max[size].first, std::max(max[size].second, max[size - 1].second)};
+void doplus (std::vector<parametrs> &words) {
+  int size = words.size() - 1;
+  parametrs word;
+  if (words[size].isinf || words[size - 1].isinf) {
+    word.isinf = true;
   } else {
-    type = 6;
-    maxm = {max[size].first + max[size - 1].first,
-            std::max(max[size].second + max[size - 1].first, max[size - 1].second)};
+    if (words[size].type == words[size - 1].type) {
+      word.type = words[size].type;
+    } else  {
+      word.type = 2;
+    }
+    word.maxprefixonlyletter = std::max(words[size -1].maxprefixonlyletter, words[size].maxprefixonlyletter);
+    word.maxprefixnoonlyletter = std::max(words[size - 1].maxprefixnoonlyletter, words[size].maxprefixnoonlyletter);
+    word.fixedtype();
   }
-  check(maxm, type);
-  typesymbol.pop_back();
-  typesymbol.pop_back();
-  typesymbol.push_back(type);
-  max.pop_back();
-  max.pop_back();
-  max.push_back(maxm);
+  words.pop_back();
+  words.pop_back();
+  words.push_back(word);
+  //word.print();
 }
+
+void dostar (std::vector<parametrs> &words) {
+  if (words.back().type != 0 && words.back().maxprefixonlyletter != 0) {
+    words.back().type = 1;
+    words.back().maxprefixonlyletter = 0;
+    words.back().maxprefixnoonlyletter = 0;
+    words.back().isinf = true;
+  } else {
+    words.back().type = 3;
+    words.back().maxprefixonlyletter = 0;
+    words.back().fixedtype();
+  }
+  //words.back().print();
+}
+
+void dopoint (std::vector<parametrs> &words) {
+  int size = words.size() - 1;
+  parametrs word;
+  if (words[size - 1].isinf || (words[size].isinf && words[size - 1].type != 0)) {
+    word.isinf = true;
+  } else if (words[size - 1].type == 0) {
+    word = words[size - 1];
+  } else if (words[size].type == 0) {
+    word.type = 0;
+    word.maxprefixonlyletter = 0;
+    word.maxprefixnoonlyletter =
+        std::max(words[size].maxprefixnoonlyletter + words[size-1].maxprefixonlyletter, words[size-1].maxprefixnoonlyletter);
+  } else if (words[size - 1].type == 1) {
+    word.type = words[size].type;
+    word.maxprefixonlyletter = words[size].maxprefixonlyletter + words[size - 1].maxprefixonlyletter;
+    word.maxprefixnoonlyletter = words[size].maxprefixnoonlyletter + words[size - 1].maxprefixonlyletter;
+  } else if (words[size].type == 1) {
+    word.type = 2;
+    word.maxprefixonlyletter = words[size].maxprefixonlyletter + words[size - 1].maxprefixonlyletter;
+    word.maxprefixnoonlyletter = words[size - 1].maxprefixnoonlyletter;
+    word.fixedtype();
+  } else {
+    word.type = 2;
+    word.maxprefixonlyletter = words[size-1].maxprefixonlyletter + words[size].maxprefixonlyletter;
+    word.maxprefixnoonlyletter = std::max(words[size - 1].maxprefixonlyletter + words[size].maxprefixnoonlyletter,
+                                          words[size - 1].maxprefixnoonlyletter);
+    word.fixedtype();
+  }
+  words.pop_back();
+  words.pop_back();
+  words.push_back(word);
+//  word.print();
+}
+
 
 std::string MaxPrefixSymbol (std::string regular, char symbol) {
   if (symbol == '1') {
@@ -183,39 +99,33 @@ std::string MaxPrefixSymbol (std::string regular, char symbol) {
   if (symbol != 'a' && symbol != 'b' && symbol != 'c') {
     return "ERROR";
   }
-  std::vector<std::pair<int, int>> max;
-  std::vector<int> typesymbol;
+  std::vector<parametrs> words;
   std::string expression;
   for (size_t i = 0; i < regular.length(); ++i) {
     if (regular[i] == 'a' || regular[i] == 'b' || regular[i] == 'c' || (regular[i]) == '1') {
       expression = regular[i];
       if (regular[i] == symbol) {
-        max.push_back({1, 1});
-        typesymbol.push_back(3);
+        words.push_back(parametrs(1, 1, 0));
       } else if (regular[i] == '1'){
-        max.push_back({0, 0});
-        typesymbol.push_back(1);
+        words.push_back(parametrs(1, 0, 0));
       } else {
-        max.push_back({0, 0});
-        typesymbol.push_back(0);
+        words.push_back(parametrs(0, 0, 0));
       }
-    } else if (regular[i] == '+' && max.size() >= 2) {
-      doplus(max, typesymbol);
-    } else if (regular[i] == '.' && max.size() >= 2) {
-      dopoint(max, typesymbol);
-    } else if (regular[i] == '*' && max.size() >= 1) {
-      dostar(max, typesymbol);
+    } else if (regular[i] == '+' && words.size() >= 2) {
+      doplus(words);
+    } else if (regular[i] == '.' && words.size() >= 2) {
+      dopoint(words);
+    } else if (regular[i] == '*' && words.size() >= 1) {
+      dostar(words);
     } else {
       return "ERROR";
     }
   }
-  if (typesymbol.size() == 1) {
-    if (typesymbol[0] == 4) {
+  if (words.size() == 1) {
+    if (words.back().isinf) {
       return "INF";
-    } else {
-      return std::to_string(std::max(max[0].first, max[0].second) );
-    }
-  } else {
+    } 
+    return std::to_string(std::max(words.back().maxprefixonlyletter, words.back().maxprefixnoonlyletter));
+  } 
     return "ERROR";
-  }
 }
